@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.beam:beam-sdks-java-core:0.6.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/beam/beam-sdks-java-core/0.6.0-SNAPSHOT/beam-sdks-java-core-0.6.0-20170306.070851-38.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/beam/beam-sdks-java-core/0.6.0-SNAPSHOT/beam-sdks-java-core-0.6.0-20170306.070851-38-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/beam/beam-sdks-java-core/0.6.0-SNAPSHOT/beam-sdks-java-core-0.6.0-20170306.070851-38-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

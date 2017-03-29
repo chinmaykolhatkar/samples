@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.beam:beam-sdks-java-io-google-cloud-platform:0.6.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/beam/beam-sdks-java-io-google-cloud-platform/0.6.0-SNAPSHOT/beam-sdks-java-io-google-cloud-platform-0.6.0-20170305.071730-36.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/beam/beam-sdks-java-io-google-cloud-platform/0.6.0-SNAPSHOT/beam-sdks-java-io-google-cloud-platform-0.6.0-20170305.071730-36-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/beam/beam-sdks-java-io-google-cloud-platform/0.6.0-SNAPSHOT/beam-sdks-java-io-google-cloud-platform-0.6.0-20170305.071730-36-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
