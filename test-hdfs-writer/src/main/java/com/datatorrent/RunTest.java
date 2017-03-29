@@ -1,18 +1,20 @@
 package com.datatorrent;
 
+
 import java.io.*;
-import java.util.Arrays;
 import java.util.Properties;
 
 /**
  * Created by chinmay on 24/3/17.
  */
 public class RunTest {
+
   public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, InstantiationException, ClassNotFoundException {
     Properties prop = new Properties();
     InputStream inProp = new FileInputStream(args[0]);
     prop.load(inProp);
 
+    RunTest.print("Starting writer");
     Writer writer = getWriter(prop.getProperty("writerClass"));
     writer.init(prop.getProperty("writePath"));
     WriterThread wt = new WriterThread(writer, Long.parseLong(prop.getProperty
@@ -24,7 +26,7 @@ public class RunTest {
       Thread.sleep(waitBetweenReaderWriter);
     }
 
-
+    RunTest.print("Starting reader");
     Reader reader = getReader(prop.getProperty("readerClass"));
     reader.init(prop.getProperty("writePath"));
     ReaderThread rt = new ReaderThread(reader, Long.parseLong(prop.getProperty
@@ -63,21 +65,29 @@ public class RunTest {
     }
   }
 
+  public static int getSerSize(Object o) throws IOException {
+    Record r = new Record(0, 0);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream out = new ObjectOutputStream(baos);
+    out.writeObject(r);
+    out.flush();
+    byte[] bytes = baos.toByteArray();
+    return bytes.length;
+  }
+
   public static byte[] serialize(Object obj) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ObjectOutputStream os = new ObjectOutputStream(out);
     os.writeObject(obj);
-    os.flush();
+    out.flush();
     byte[] bytes = out.toByteArray();
-    os.close();
     return bytes;
   }
 
-
   public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-    ByteArrayInputStream in = new ByteArrayInputStream(data);
-    ObjectInputStream is = new ObjectInputStream(in);
-    return is.readObject();
+    ByteArrayInputStream bais = new ByteArrayInputStream(data);
+    ObjectInputStream in = new ObjectInputStream(bais);
+    return in.readObject();
   }
 
   public static class WriterThread extends Thread
@@ -147,16 +157,18 @@ public class RunTest {
     }
 
     private void printRecords(byte[] read, long objectLength) throws IOException, ClassNotFoundException {
-      ByteArrayInputStream in = new ByteArrayInputStream(read);
-      ObjectInputStream is = new ObjectInputStream(in);
-      Record r = (Record) is.readObject();
-      is.close();
-      System.out.println(System.currentTimeMillis() + "," + r);
+      Object deserialize = deserialize(read);
+      RunTest.print(System.currentTimeMillis() + "," + deserialize);
     }
 
     public void stopThread()
     {
       stop = true;
     }
+  }
+
+  public static void print(String s)
+  {
+    System.out.println(System.currentTimeMillis() + " : " + s);
   }
 }

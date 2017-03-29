@@ -23,6 +23,7 @@ public class WriterImpl implements Writer
 
   public void write(byte[] byteToWrite) throws IOException
   {
+    ((DFSOutputStream)out.getWrappedStream()).setDropBehind();
     out.write(byteToWrite);
     if (count++ % SYNC_AFTER_RECORDS == 0) {
       ((DFSOutputStream)out.getWrappedStream()).hsync(EnumSet.of(HdfsDataOutputStream.SyncFlag.UPDATE_LENGTH));
@@ -37,6 +38,7 @@ public class WriterImpl implements Writer
     fs = FileSystem.get(conf);
 
     out = fs.create(new Path(path));
+    out.
   }
 
   public void close() throws IOException

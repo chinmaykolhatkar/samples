@@ -24,7 +24,11 @@ public class ReaderImpl2 implements Reader {
 
   @Override
   public byte[] read(long timeout) throws IOException {
-    reopen();
+    long startTime = System.currentTimeMillis();
+    while (((System.currentTimeMillis() - startTime) < timeout) && isReopenRequired()) {
+      reopen();
+    }
+
 //    int byteBufferLength = (int) ((((visibleLength - charRead) / objectLength) - 1) * objectLength);
     int byteBufferLength = (int) objectLength;
     byte[] buf = new byte[byteBufferLength];
@@ -40,8 +44,7 @@ public class ReaderImpl2 implements Reader {
   @Override
   public void init(String path) throws IOException {
     Record record = new Record(0, 0);
-    byte[] serialize = RunTest.serialize(record);
-    this.objectLength = serialize.length;
+    this.objectLength = RunTest.getSerSize(record);
 
     this.filePath = path;
     this.fs = FileSystem.get(new Configuration());
@@ -53,11 +56,22 @@ public class ReaderImpl2 implements Reader {
     long length;
     while ((length = in.getVisibleLength()) <= visibleLength) {
       in.close();
-      System.out.println("At " + System.currentTimeMillis() + ", waiting for reopen..");
+      RunTest.print("Waiting before reopen..");
       waitFor(REOPEN_WAIT_INTERVAL);
       in = (HdfsDataInputStream) this.fs.open(new Path(this.filePath));
     }
     this.visibleLength = length;
+  }
+
+  private boolean isReopenRequired()
+  {
+    long bytesYetToRead = visibleLength - charRead;
+    if (bytesYetToRead > 2 * objectLength) {
+      return false;
+    }
+    else {
+      return true;
+    }
   }
 
   void waitFor(long interval)
