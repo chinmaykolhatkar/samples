@@ -10,7 +10,7 @@ public class Record implements Serializable {
 
   private long timestamp;
   private long id;
-  private byte[] ranDomArray = new byte[1024*128];
+  private byte[] ranDomArray = new byte[1024*1024];
 
   public Record(long timestamp, long id) {
     this.timestamp = timestamp;
