@@ -1,19 +1,16 @@
 package com.datatorrent;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.client.HdfsDataInputStream;
+import org.apache.hadoop.hdfs.DFSInputStream;
 
-import java.io.EOFException;
 import java.io.IOException;
 
 public class ReaderImpl2 implements Reader {
-  public static final long REOPEN_WAIT_INTERVAL = 500;
+  public static final long REOPEN_WAIT_INTERVAL = 100;
   private String filePath;
   private FileSystem fs;
-  private HdfsDataInputStream in;
-  private long visibleLength = 0;
+  private DFSInputStream in;
   private long charRead = 0;
   private long objectLength = 0;
 
@@ -24,21 +21,49 @@ public class ReaderImpl2 implements Reader {
 
   @Override
   public byte[] read(long timeout) throws IOException {
+    int byteBufferLength = (int) objectLength;
+    long currentFileLength;
     long startTime = System.currentTimeMillis();
-    while (((System.currentTimeMillis() - startTime) < timeout) && isReopenRequired()) {
-      reopen();
+    while (!(((currentFileLength = getCurrentFileLength()) - charRead) > byteBufferLength)) {
+      RunTest.print("CurrentFileLength = " + currentFileLength + " CharRead : " + charRead);
+      if (hasTimedOut(startTime, timeout)) {
+        RunTest.print("Timed out");
+        return null;
+      }
+      RunTest.print("Waiting for interval to open the file " + REOPEN_WAIT_INTERVAL);
+//      waitFor(REOPEN_WAIT_INTERVAL);
+      RunTest.print("Closing the file");
+      closeFile();
+      RunTest.print("Opening the file");
+      openFile();
     }
 
-//    int byteBufferLength = (int) ((((visibleLength - charRead) / objectLength) - 1) * objectLength);
-    int byteBufferLength = (int) objectLength;
     byte[] buf = new byte[byteBufferLength];
-    try {
-      in.readFully(charRead, buf);
-    } catch (EOFException e) {
-      read(0);
-    }
-    charRead += buf.length;
+    this.in.seek(charRead);
+    int bytesRead = this.in.read(buf, 0, buf.length);
+    charRead += bytesRead;
     return buf;
+  }
+
+  private boolean hasTimedOut(long startTime, long timeout) {
+    if (timeout != 0) {
+      return ((System.currentTimeMillis() - startTime) > timeout);
+    }
+    else {
+      return false;
+    }
+  }
+
+  private void openFile() throws IOException {
+    this.in = (DFSInputStream) this.fs.open(new Path(this.filePath)).getWrappedStream();
+  }
+
+  private void closeFile() throws IOException {
+    this.in.close();
+  }
+
+  private long getCurrentFileLength() {
+    return this.in.getFileLength();
   }
 
   @Override
@@ -47,31 +72,8 @@ public class ReaderImpl2 implements Reader {
     this.objectLength = RunTest.getSerSize(record);
 
     this.filePath = path;
-    this.fs = FileSystem.get(new Configuration());
-    this.in = (HdfsDataInputStream) this.fs.open(new Path(this.filePath));
-    reopen();
-  }
-
-  public void reopen() throws IOException {
-    long length;
-    while ((length = in.getVisibleLength()) <= visibleLength) {
-      in.close();
-      RunTest.print("Waiting before reopen..");
-      waitFor(REOPEN_WAIT_INTERVAL);
-      in = (HdfsDataInputStream) this.fs.open(new Path(this.filePath));
-    }
-    this.visibleLength = length;
-  }
-
-  private boolean isReopenRequired()
-  {
-    long bytesYetToRead = visibleLength - charRead;
-    if (bytesYetToRead > 2 * objectLength) {
-      return false;
-    }
-    else {
-      return true;
-    }
+    this.fs = FileSystem.get(RunTest.conf);
+    openFile();
   }
 
   void waitFor(long interval)
@@ -85,6 +87,9 @@ public class ReaderImpl2 implements Reader {
 
   @Override
   public void close() throws IOException {
-    in.close();
+    closeFile();
+    this.fs.close();
   }
+
+
 }

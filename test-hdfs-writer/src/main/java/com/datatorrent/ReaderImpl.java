@@ -52,8 +52,7 @@ public class ReaderImpl implements Reader {
 
   public void init(String path) throws IOException {
     this.path = path;
-    Configuration conf = new Configuration();
-    fs = FileSystem.get(conf);
+    fs = FileSystem.get(RunTest.conf);
     br = new BufferedReader(new InputStreamReader(fs.open(new Path(path))));
   }
 

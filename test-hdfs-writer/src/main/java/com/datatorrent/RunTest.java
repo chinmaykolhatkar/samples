@@ -1,6 +1,8 @@
 package com.datatorrent;
 
 
+import org.apache.hadoop.conf.Configuration;
+
 import java.io.*;
 import java.util.Properties;
 
@@ -8,8 +10,12 @@ import java.util.Properties;
  * Created by chinmay on 24/3/17.
  */
 public class RunTest {
+  public static Configuration conf;
 
   public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    conf = new Configuration();
+//    conf.set("dfs.client-write-packet-size", "1024");
+
     Properties prop = new Properties();
     InputStream inProp = new FileInputStream(args[0]);
     prop.load(inProp);
@@ -33,7 +39,13 @@ public class RunTest {
               ("readerTimeoutInterval")));
     rt.start();
 
-    Thread.sleep(Long.parseLong(prop.getProperty("runInterval")));
+    try {
+      print("Sleeping for " + Long.parseLong(prop.getProperty("runInterval")));
+      Thread.sleep(Long.parseLong(prop.getProperty("runInterval")));
+      print("Sleeping done");
+    } catch (InterruptedException e) {
+      print("Sleep interrupted...");
+    }
 
     wt.stopThread();
     wt.join();
@@ -149,7 +161,9 @@ public class RunTest {
       while (!stop) {
         try {
           byte[] read = reader.read(timeout);
-          printRecords(read, objectLength);
+          if (read != null) {
+            printRecords(read, objectLength);
+          }
         } catch (IOException | ClassNotFoundException e) {
           e.printStackTrace();
         }
@@ -158,7 +172,10 @@ public class RunTest {
 
     private void printRecords(byte[] read, long objectLength) throws IOException, ClassNotFoundException {
       Object deserialize = deserialize(read);
-      RunTest.print(System.currentTimeMillis() + "," + deserialize);
+      Record r = (Record) deserialize;
+      long currentTime = System.currentTimeMillis();
+      RunTest.printRecord("Read record: " + currentTime + "," + r + "," + (currentTime - r
+              .getTimestamp()));
     }
 
     public void stopThread()
@@ -167,8 +184,12 @@ public class RunTest {
     }
   }
 
+  private static void printRecord(String s) {
+    System.out.println(s);
+  }
+
   public static void print(String s)
   {
-    System.out.println(System.currentTimeMillis() + " : " + s);
+//    System.out.println(System.currentTimeMillis() + " : " + s);
   }
 }

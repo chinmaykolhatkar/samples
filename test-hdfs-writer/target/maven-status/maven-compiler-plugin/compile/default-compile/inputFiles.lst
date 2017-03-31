@@ -2,6 +2,7 @@
 /home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/Reader.java
 /home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/ReaderImpl.java
 /home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/WriterImpl.java
+/home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/ReaderImpl3.java
 /home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/RunTest.java
 /home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/ReaderImpl2.java
 /home/chinmay/src/samples/test-hdfs-writer/src/main/java/com/datatorrent/Record.java

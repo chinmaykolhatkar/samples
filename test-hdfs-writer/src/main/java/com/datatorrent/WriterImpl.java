@@ -17,28 +17,32 @@ import java.util.EnumSet;
 public class WriterImpl implements Writer
 {
   FileSystem fs;
-  FSDataOutputStream out;
-  int count = 0;
-  public static final int SYNC_AFTER_RECORDS = 1000;
+  DFSOutputStream out;
+  String path;
 
   public void write(byte[] byteToWrite) throws IOException
   {
-    ((DFSOutputStream)out.getWrappedStream()).setDropBehind();
-    out.write(byteToWrite);
-    if (count++ % SYNC_AFTER_RECORDS == 0) {
-      ((DFSOutputStream)out.getWrappedStream()).hsync(EnumSet.of(HdfsDataOutputStream.SyncFlag.UPDATE_LENGTH));
+    try {
+      RunTest.print("Writing... " + RunTest.deserialize(byteToWrite).toString());
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
     }
-    else {
+    try {
+      out.write(byteToWrite);
+      RunTest.print("Hflusing the data...");
       out.hflush();
+    } catch (Exception e) {
+      RunTest.print("Current Thread is : " + Thread.currentThread().getId());
+      e.printStackTrace();
+      return;
     }
   }
 
   public void init(String path) throws IOException {
-    Configuration conf = new Configuration();
-    fs = FileSystem.get(conf);
+    this.path = path;
+    fs = FileSystem.get(RunTest.conf);
 
-    out = fs.create(new Path(path));
-    out.
+    out = (DFSOutputStream) fs.create(new Path(path)).getWrappedStream();
   }
 
   public void close() throws IOException

@@ -10,6 +10,7 @@ public class Record implements Serializable {
 
   private long timestamp;
   private long id;
+  private byte[] ranDomArray = new byte[1024*128];
 
   public Record(long timestamp, long id) {
     this.timestamp = timestamp;
@@ -30,6 +31,14 @@ public class Record implements Serializable {
 
   public void setId(long id) {
     this.id = id;
+  }
+
+  public byte[] getRanDomArray() {
+    return ranDomArray;
+  }
+
+  public void setRanDomArray(byte[] ranDomArray) {
+    this.ranDomArray = ranDomArray;
   }
 
   @Override
