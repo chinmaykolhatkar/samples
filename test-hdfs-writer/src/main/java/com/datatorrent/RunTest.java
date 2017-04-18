@@ -20,24 +20,27 @@ public class RunTest {
     InputStream inProp = new FileInputStream(args[0]);
     prop.load(inProp);
 
-    RunTest.print("Starting writer");
-    Writer writer = getWriter(prop.getProperty("writerClass"));
-    writer.init(prop.getProperty("writePath"));
-    WriterThread wt = new WriterThread(writer, Long.parseLong(prop.getProperty
-              ("writerTimeoutInterval")));
-    wt.start();
-
-    long waitBetweenReaderWriter = Long.parseLong(prop.getProperty("waitBetweenReaderWriter"));
-    if (waitBetweenReaderWriter != 0) {
-      Thread.sleep(waitBetweenReaderWriter);
+    Writer writer = null;
+    WriterThread wt = null;
+    Reader reader = null;
+    ReaderThread rt = null;
+    if (Boolean.parseBoolean(prop.getProperty("startWriter"))) {
+      RunTest.print("Starting writer");
+      writer = getWriter(prop.getProperty("writerClass"));
+      writer.init(prop.getProperty("writePath"));
+      wt = new WriterThread(writer, Long.parseLong(prop.getProperty
+        ("writerTimeoutInterval")));
+      wt.start();
     }
 
-    RunTest.print("Starting reader");
-    Reader reader = getReader(prop.getProperty("readerClass"));
-    reader.init(prop.getProperty("writePath"));
-    ReaderThread rt = new ReaderThread(reader, Long.parseLong(prop.getProperty
-              ("readerTimeoutInterval")));
-    rt.start();
+    if (Boolean.parseBoolean(prop.getProperty("startReader"))) {
+      RunTest.print("Starting reader");
+      reader = getReader(prop.getProperty("readerClass"));
+      reader.init(prop.getProperty("writePath"));
+      rt = new ReaderThread(reader, Long.parseLong(prop.getProperty
+        ("readerTimeoutInterval")));
+      rt.start();
+    }
 
     try {
       print("Sleeping for " + Long.parseLong(prop.getProperty("runInterval")));
@@ -47,14 +50,23 @@ public class RunTest {
       print("Sleep interrupted...");
     }
 
-    wt.stopThread();
-    wt.join();
+    if (wt != null) {
+      wt.stopThread();
+      wt.join();
+    }
 
-    rt.stopThread();
-    rt.join();
+    if (rt != null) {
+      rt.stopThread();
+      rt.join();
+    }
 
-    reader.close();
-    writer.close();
+    if (reader != null) {
+      reader.close();
+    }
+    if (writer != null) {
+      writer.close();
+    }
+    System.out.println("Process finished.");
   }
 
   private static Reader getReader(String arg) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
