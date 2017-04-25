@@ -3,6 +3,7 @@
  */
 package com.example.myapexapp;
 
+import com.datatorrent.api.AutoMetric;
 import com.datatorrent.api.DefaultOutputPort;
 import com.datatorrent.api.InputOperator;
 import com.datatorrent.common.util.BaseOperator;
@@ -17,17 +18,23 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
 
   public final transient DefaultOutputPort<Double> out = new DefaultOutputPort<Double>();
 
+  @AutoMetric
+  private double lastValue = 0;
+
   @Override
   public void beginWindow(long windowId)
   {
     count = 0;
+    lastValue = 0;
   }
 
   @Override
   public void emitTuples()
   {
     if (count++ < numTuples) {
-      out.emit(Math.random());
+      double random = Math.random() * 100;
+      lastValue = random;
+      out.emit(random);
     }
   }
 
