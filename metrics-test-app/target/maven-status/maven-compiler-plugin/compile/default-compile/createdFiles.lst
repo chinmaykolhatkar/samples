@@ -1,4 +1,5 @@
 com/example/myapexapp/RandomNumberGenerator.class
+com/example/myapexapp/MyMetricsAggregator.class
 com/example/myapexapp/Application.class
 com/example/myapexapp/Consumer.class
 com/example/myapexapp/Consumer$1.class

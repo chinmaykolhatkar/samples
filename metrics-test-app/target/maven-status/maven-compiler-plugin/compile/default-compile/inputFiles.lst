@@ -1,3 +1,4 @@
 /home/chinmay/src/samples/metrics-test-app/src/main/java/com/example/myapexapp/Application.java
 /home/chinmay/src/samples/metrics-test-app/src/main/java/com/example/myapexapp/Consumer.java
 /home/chinmay/src/samples/metrics-test-app/src/main/java/com/example/myapexapp/RandomNumberGenerator.java
+/home/chinmay/src/samples/metrics-test-app/src/main/java/com/example/myapexapp/MyMetricsAggregator.java

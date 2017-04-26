@@ -5,6 +5,7 @@ package com.example.myapexapp;
 
 import org.apache.hadoop.conf.Configuration;
 
+import com.datatorrent.api.Context;
 import com.datatorrent.api.annotation.ApplicationAnnotation;
 import com.datatorrent.api.StreamingApplication;
 import com.datatorrent.api.DAG;
@@ -23,11 +24,14 @@ public class Application implements StreamingApplication
 
     RandomNumberGenerator randomGenerator = dag.addOperator("randomGenerator", RandomNumberGenerator.class);
     randomGenerator.setNumTuples(500);
+    dag.setAttribute(randomGenerator, Context.OperatorContext.METRICS_AGGREGATOR, new MyMetricsAggregator());
 
     Consumer consumer = dag.addOperator("consumer", Consumer.class);
 
     ConsoleOutputOperator cons = dag.addOperator("console", new ConsoleOutputOperator());
 
     dag.addStream("randomData", randomGenerator.out, consumer.in, cons.input).setLocality(Locality.CONTAINER_LOCAL);
+
+    dag.setAttribute(Context.DAGContext.METRICS_TRANSPORT, null);
   }
 }
