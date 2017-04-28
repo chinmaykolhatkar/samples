@@ -294,7 +294,7 @@
 
     <dependency>
       <groupId>com.datatorrent</groupId>
-      <artifactId>dt-metrics</artifactId>
+      <artifactId>metrics-plugin</artifactId>
       <version>3.9.0-SNAPSHOT</version>
     </dependency>
     <dependency>

@@ -59,7 +59,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.xbean:xbean-asm5-shaded:4.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.jctools:jctools-core:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.apex:apex-shaded-ning19:1.0.0" level="project" />
-    <orderEntry type="module" module-name="dt-metrics" />
+    <orderEntry type="module" module-name="metrics-plugin" />
+    <orderEntry type="module" module-name="metrics-lib" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.7.0" level="project" />

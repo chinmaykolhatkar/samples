@@ -25,9 +25,6 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   public final transient DefaultOutputPort<Double> out = new DefaultOutputPort<Double>();
 
   @AutoMetric
-  private double lastValue = 0;
-
-  @AutoMetric
   private Collection<Collection<Pair<String, Object>>> ret = new ArrayList<>();
 
   private String operatorId;
@@ -44,7 +41,6 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   {
     super.beginWindow(windowId);
     count = 0;
-    lastValue = 0;
 
     ret.clear();
     Collection<Pair<String, Object>> val = new ArrayList<>();
@@ -64,7 +60,6 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   {
     if (count++ < numTuples) {
       double random = Math.random() * 100;
-      lastValue = random;
       out.emit(random);
     }
   }
