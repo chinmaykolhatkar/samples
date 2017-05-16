@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.datatorrent.api.AutoMetric;
+import com.datatorrent.api.Context;
 import com.datatorrent.api.DefaultInputPort;
 import com.datatorrent.common.util.BaseOperator;
 import com.datatorrent.common.util.Pair;
@@ -21,6 +22,12 @@ public class Consumer extends BaseOperator
   private double sum;
 
   private int count;
+
+  @Override
+  public void setup(Context.OperatorContext context)
+  {
+    super.setup(context);
+  }
 
   @Override
   public void beginWindow(long windowId)

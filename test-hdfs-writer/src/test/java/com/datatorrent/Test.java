@@ -1,27 +1,35 @@
 package com.datatorrent;
 
-import java.lang.reflect.Method;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Created by chinmay on 13/4/17.
  */
 public class Test
 {
-  public static void main(String[] arg){
-    Test2 t = new Test2();
-    t.write();
-    System.out.println("sdfsdf");
-    t.write1();
+  public static void main(String[] arg) throws IOException, ClassNotFoundException, JSONException
+  {
+    String json = "{\"opName\":{\"abc\":\"int\", \"pqr\": \"float\"}}";
+    JSONObject o = new JSONObject(json);
 
-    System.out.println("sdfsdf");
-    Test1 t1 = new Test1();
-    t1.write();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(o);
 
-    System.out.println("fghljhgjhhjgk");
+    baos.flush();
 
-    for (Method method : Test1.class.getDeclaredMethods()) {
-      System.out.println(method.getName());
-    }
+    byte[] bytes = baos.toByteArray();
 
+    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+    ObjectInputStream ois = new ObjectInputStream(bais);
+    Object o1 = ois.readObject();
+    System.out.println(o1);
   }
 }
