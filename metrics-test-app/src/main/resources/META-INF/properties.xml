@@ -25,9 +25,5 @@
     <name>apex.plugin.stram.plugins</name>
     <value>com.datatorrent.metrics.plugin.MetricWriterPlugin</value>
   </property>
-  <property>
-    <name>dt.metrics.baseDir</name>
-    <value>datatorrent/metrics</value>
-  </property>
 </configuration>
 

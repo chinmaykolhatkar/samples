@@ -1,14 +1,9 @@
 package com.example.myapexapp;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.datatorrent.api.AutoMetric;
 import com.datatorrent.api.Context;
 import com.datatorrent.api.DefaultInputPort;
 import com.datatorrent.common.util.BaseOperator;
-import com.datatorrent.common.util.Pair;
 
 /**
  * Created by chinmay on 19/4/17.
@@ -16,12 +11,13 @@ import com.datatorrent.common.util.Pair;
 public class Consumer extends BaseOperator
 {
   @AutoMetric
-  private int avg;
+  private double avg;
 
   @AutoMetric
   private double sum;
 
-  private int count;
+  @AutoMetric
+  private int c;
 
   @Override
   public void setup(Context.OperatorContext context)
@@ -32,7 +28,7 @@ public class Consumer extends BaseOperator
   @Override
   public void beginWindow(long windowId)
   {
-    count = 0;
+    c = 0;
     sum = 0;
   }
 
@@ -41,7 +37,7 @@ public class Consumer extends BaseOperator
     @Override
     public void process(Double tuple)
     {
-      count++;
+      c++;
       sum += tuple;
     }
   };
@@ -49,6 +45,6 @@ public class Consumer extends BaseOperator
   @Override
   public void endWindow()
   {
-    avg = (int)(sum / count);
+    avg = sum / c;
   }
 }

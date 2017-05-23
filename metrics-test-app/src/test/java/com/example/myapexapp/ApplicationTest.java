@@ -34,4 +34,21 @@ public class ApplicationTest {
     }
   }
 
+  @Test
+  public void anotherTest()
+  {
+    long EOR_MARKER = 0x00000000ffffffffL;
+    long recordLength = 56;
+    System.out.println(recordLength);
+
+    long EOR = (recordLength << 32) | EOR_MARKER;
+    System.out.println(EOR);
+
+    if ((EOR & EOR_MARKER) != EOR_MARKER) {
+      throw new RuntimeException("Failed to validate EOR marker.");
+    }
+
+    long orig = EOR >> 32;
+    System.out.println(orig);
+  }
 }
