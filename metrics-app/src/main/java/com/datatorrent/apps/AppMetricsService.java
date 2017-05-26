@@ -15,19 +15,26 @@ public class AppMetricsService extends DefaultAppMetricComputeService
   @Override
   public Map<String, Object> computeAppLevelMetrics(Map<String, Map<String, Object>> completedMetrics)
   {
-    LOG.info("completedMetrics {}", completedMetrics);
     Long incoming = (Long) completedMetrics.get("csvParser").get("incomingTuplesCount");
     Long filtered = (Long) completedMetrics.get("filter").get("trueTuples");
-    LOG.info("incoming {}, filtered{}", incoming, filtered);
+    Long windowedRecordSize = (Long)completedMetrics.get("POJOGenerator").get("windowedRecordSize");
+    Long recordCount = (Long)completedMetrics.get("POJOGenerator").get("emittedRecordCount");
 
     Map<String, Object> output = Maps.newHashMap();
     if(incoming != null && filtered != null){
       if(incoming != 0){
         double percentFiltered = (filtered * 100.0) /incoming;
         output.put("percentFiltered", percentFiltered);
-        LOG.info("percentFiltered {}", percentFiltered);
       }
     }
+
+    if ((windowedRecordSize != null) && (recordCount != null)) {
+      if (recordCount != 0) {
+        double averageRecordSize = new Double(windowedRecordSize) / new Double(recordCount);
+        output.put("avgRecordSize", averageRecordSize);
+      }
+    }
+
     return output;
   }
 
