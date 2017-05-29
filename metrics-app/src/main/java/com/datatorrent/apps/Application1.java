@@ -31,8 +31,8 @@ import com.datatorrent.lib.filter.FilterOperator;
 import com.datatorrent.lib.io.ConsoleOutputOperator;
 import com.datatorrent.metrics.appmetrics.AppMetricComputeService;
 
-@ApplicationAnnotation(name = "Metric-App")
-public class Application implements StreamingApplication
+@ApplicationAnnotation(name = "Metric-Primitives-App")
+public class Application1 implements StreamingApplication
 {
   public void populateDAG(DAG dag, Configuration conf)
   {
@@ -42,10 +42,10 @@ public class Application implements StreamingApplication
     CsvFormatter formatter = dag.addOperator("formatter", new CsvFormatter());
     ConsoleOutputOperator console = dag.addOperator("console", new ConsoleOutputOperator());
 
-    dag.addStream("data", generator.out, csvParser.in);
+    dag.addStream("data", generator.out, csvParser.in).setLocality(DAG.Locality.THREAD_LOCAL);
     dag.addStream("pojo", csvParser.out, filterOperator.input);
     dag.addStream("filtered", filterOperator.truePort, formatter.in);
-    dag.addStream("string", formatter.out, console.input);
+    dag.addStream("string", formatter.out, console.input).setLocality(DAG.Locality.THREAD_LOCAL);
     
     dag.setAttribute(AppMetricComputeService.APP_METRIC_COMPUTE_SERVICE, new AppMetricsService());
     dag.setAttribute(Context.DAGContext.METRICS_TRANSPORT, null);
