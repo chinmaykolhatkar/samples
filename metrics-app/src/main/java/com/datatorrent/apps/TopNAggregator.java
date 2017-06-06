@@ -23,8 +23,6 @@ public class TopNAggregator implements AutoMetric.Aggregator, Serializable
   {
     Collection<Collection<Pair<String, Object>>> ret = new ArrayList<>();
 
-    System.out.println("Size of collection : " + collection.size());
-
     for (AutoMetric.PhysicalMetricsContext pmc : collection) {
       for (Map.Entry<String, Object> metrics : pmc.getMetrics().entrySet()) {
         String key = metrics.getKey();

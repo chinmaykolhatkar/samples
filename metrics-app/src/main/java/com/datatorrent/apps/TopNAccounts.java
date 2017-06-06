@@ -86,8 +86,6 @@ public class TopNAccounts extends BaseOperator
         break;
       }
     }
-
-    System.out.println("TOP N Size : " + topN.size());
   }
 
   public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> unsortMap) {
