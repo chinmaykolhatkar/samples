@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableLong;
 
 import com.datatorrent.api.AutoMetric;
 import com.datatorrent.api.DefaultInputPort;
@@ -27,7 +28,7 @@ public class TopNAccounts extends BaseOperator
   @AutoMetric
   private Collection<Collection<Pair<String, Object>>> topN = new ArrayList<>();
 
-  private Map<String, MutableInt> collectives = new HashMap<>();
+  private Map<String, MutableLong> collectives = new HashMap<>();
 
   public final transient DefaultInputPort<Object> in = new DefaultInputPort<Object>()
   {
@@ -38,9 +39,9 @@ public class TopNAccounts extends BaseOperator
       String name = tuple.getName();
       int amount = tuple.getAmount();
 
-      MutableInt i = collectives.get(name);
+      MutableLong i = collectives.get(name);
       if (i == null) {
-        collectives.put(name, new MutableInt(amount));
+        collectives.put(name, new MutableLong(amount));
       } else {
         i.add(amount);
       }
@@ -64,20 +65,20 @@ public class TopNAccounts extends BaseOperator
 //    topN.add(val);
 //    topN.add(val1);
 //
-    Map<String, Integer> unsortedMap = new HashMap<>();
-    for (Map.Entry<String, MutableInt> entry : collectives.entrySet()) {
+    Map<String, Long> unsortedMap = new HashMap<>();
+    for (Map.Entry<String, MutableLong> entry : collectives.entrySet()) {
       unsortedMap.put(entry.getKey(), entry.getValue().getValue());
     }
 
-    Map<String, Integer> sortedMap = sortByValue(unsortedMap);
+    Map<String, Long> sortedMap = sortByValue(unsortedMap);
     topN.clear();
     if (sortedMap.size() <= 0) {
-      sortedMap.put("NA1", new Integer(1));
-      sortedMap.put("NA2", new Integer(2));
+      sortedMap.put("NA1", new Long(1));
+      sortedMap.put("NA2", new Long(2));
     }
 
     int count = 5;
-    for (Map.Entry<String, Integer> entry : sortedMap.entrySet()) {
+    for (Map.Entry<String, Long> entry : sortedMap.entrySet()) {
       Collection<Pair<String, Object>> row = new ArrayList<>();
       row.add(new Pair<String, Object>("Name", entry.getKey()));
       row.add(new Pair<String, Object>("Value", entry.getValue()));
