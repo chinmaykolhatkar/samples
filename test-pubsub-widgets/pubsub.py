@@ -6,10 +6,16 @@ queries = {}
 def getRandomRealNumber():
     return str(random.uniform(0, 1.0))
 
-def createSubscribeSchemaQuery(ads, no):
+def createSubscribeQuery(topic):
     q = {}
     q['type'] = 'subscribe'
-    q['topic'] = ads['result']['topic'] + '.' + no
+    q['topic'] = topic
+    return json.dumps(q)
+
+def createUnsubscribeQuery(topic):
+    q = {}
+    q['type'] = 'subscribe'
+    q['topic'] = topic
     return json.dumps(q)
 
 def createPublishSchemaQuery(ads, no):
@@ -24,13 +30,7 @@ def createPublishSchemaQuery(ads, no):
 
     return json.dumps(q)
 
-def createSubscribeDataQuery(ads, sq, no):
-    q = {}
-    q['type'] = 'subscribe'
-    q['topic'] = ads['result']['topic'] + '.' + no
-    return json.dumps(q)
-
-def createPublishDataQuery(ads, sq, no):
+def createPublishSnapshotDataQuery(ads, sq, no):
     q = {}
     q['type'] = 'publish'
     q['topic'] = ads['query']['topic']
@@ -47,19 +47,53 @@ def createPublishDataQuery(ads, sq, no):
         q['data']['data']['fields'].append(i['name'])
     return json.dumps(q)
 
+def createPublishDimensionalDataQuery(ads, sq, no):
+    q = {}
+    q['type'] = 'publish'
+    q['topic'] = ads['query']['topic']
+    q['data'] = {}
+    q['data']['id'] = float(no)
+    q['data']['type'] = 'dataQuery'
+    q['data']['countdown'] = 299
+    q['data']['incompleteResultOK'] = True
+    q['data']['data'] = {}
+    q['data']['data']['time'] = {}
+    q['data']['data']['time']['latestNumBuckets'] = 10
+    q['data']['data']['time']['bucket'] = '1m'
+    q['data']['data']['incompleteResultOK'] = True
+    q['data']['data']['keys'] = {}
+    for i in ads['context']['keys']:
+        q['data']['data']['keys'][i] = [ads['context']['keys'][i]]
+    q['data']['data']['fields'] = []
+    v = sq['data']['data'][0]['dimensions'][0]['additionalValues']
+    for i in v:
+        q['data']['data']['fields'].append(i['name'])
+    return json.dumps(q)
+
 def sendQueries(ws, r, i):
-    ws.send(createSubscribeSchemaQuery(i, r))
+    ws.send(createSubscribeQuery(i['result']['topic'] + '.' + r))
     ws.send(createPublishSchemaQuery(i, r))
     result = json.loads(ws.recv())
+    ws.send(createUnsubscribeQuery(i['result']['topic'] + '.' + r))
     r = getRandomRealNumber()
-    ws.send(createSubscribeDataQuery(i, result, r))
-    ws.send(createPublishDataQuery(i, result, r))
+    ws.send(createSubscribeQuery(i['result']['topic'] + '.' + r))
+    if (result['data']['data'][0]['schemaType'] == 'snapshot'):
+        ws.send(createPublishSnapshotDataQuery(i, result, r))
+    else:
+        ws.send(createPublishDimensionalDataQuery(i, result, r))
+    return r
+
 
 def getFileWriter(topic):
     if topic not in m:
         m[topic] = open(os.getcwd() + '/' + topic, 'w')
     return m[topic]
 
+def sendForAllDataSources(ws, appDataSources):
+    for i in appDataSources:
+        r = getRandomRealNumber()
+        r = sendQueries(ws, r, i)
+        queries[r] = i
 
 url = "http://" + sys.argv[1] + "/ws/v2/applications/" + sys.argv[2]
 content = urllib2.urlopen(url).read()
@@ -71,10 +105,7 @@ wsUrl = "ws://" + sys.argv[1] + "/pubsub"
 
 ws = websocket.create_connection(wsUrl)
 
-for i in appDataSources:
-    r = getRandomRealNumber()
-    sendQueries(ws, r, i)
-    queries[r] = i
+sendForAllDataSources(ws, appDataSources)
 
 while True:
     result = ws.recv()
@@ -85,8 +116,7 @@ while True:
     f.write(result + '\n')
     f.flush()
     if int(r['data']['countdown']) == 1:
-        id = r['data']['id']
-        sendQueries(ws, id, queries[id])
+        break
 
 ws.close()
 for i in m:
