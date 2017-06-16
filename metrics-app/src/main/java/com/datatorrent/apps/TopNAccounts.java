@@ -9,10 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
 
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 
 import com.datatorrent.api.AutoMetric;
@@ -27,6 +24,15 @@ public class TopNAccounts extends BaseOperator
 {
   @AutoMetric
   private Collection<Collection<Pair<String, Object>>> topN = new ArrayList<>();
+
+  @AutoMetric
+  private Collection<Collection<Pair<String, Object>>> topNByTwo = new ArrayList<>();
+
+  @AutoMetric
+  private int dummyCount = 0;
+
+  @AutoMetric
+  private int dummyCount2 = 0;
 
   private Map<String, MutableLong> collectives = new HashMap<>();
 
@@ -45,6 +51,8 @@ public class TopNAccounts extends BaseOperator
       } else {
         i.add(amount);
       }
+      dummyCount++;
+      dummyCount2 += 2;
     }
   };
 
@@ -65,6 +73,9 @@ public class TopNAccounts extends BaseOperator
 //    topN.add(val);
 //    topN.add(val1);
 //
+    dummyCount = 0;
+    dummyCount2 = 0;
+
     Map<String, Long> unsortedMap = new HashMap<>();
     for (Map.Entry<String, MutableLong> entry : collectives.entrySet()) {
       unsortedMap.put(entry.getKey(), entry.getValue().getValue());
@@ -72,6 +83,7 @@ public class TopNAccounts extends BaseOperator
 
     Map<String, Long> sortedMap = sortByValue(unsortedMap);
     topN.clear();
+    topNByTwo.clear();
     if (sortedMap.size() <= 0) {
       sortedMap.put("NA1", new Long(1));
       sortedMap.put("NA2", new Long(2));
@@ -83,6 +95,11 @@ public class TopNAccounts extends BaseOperator
       row.add(new Pair<String, Object>("Name", entry.getKey()));
       row.add(new Pair<String, Object>("Value", entry.getValue()));
       topN.add(row);
+
+      Collection<Pair<String, Object>> row1 = new ArrayList<>();
+      row1.add(new Pair<String, Object>("Name", entry.getKey()));
+      row1.add(new Pair<String, Object>("Value", entry.getValue() / 2));
+      topNByTwo.add(row1);
       if (count-- <= 0) {
         break;
       }
