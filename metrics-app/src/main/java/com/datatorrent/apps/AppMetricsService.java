@@ -1,6 +1,8 @@
 package com.datatorrent.apps;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -8,8 +10,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import com.datatorrent.common.util.Pair;
 import com.datatorrent.metrics.api.aggregation.NumberAggregate;
 import com.datatorrent.metrics.api.appmetrics.DefaultAppMetricProcessor;
 
@@ -40,6 +44,18 @@ public class AppMetricsService extends DefaultAppMetricProcessor
         output.put("avgRecordSize", averageRecordSize);
       }
     }
+
+    Collection<Collection<Pair<String, Object>>> ccp = Lists.newArrayList();
+    for (Map.Entry<String, Map<String, Object>> e1 : completedMetrics.entrySet()) {
+      for (Map.Entry<String, Object> e2 : e1.getValue().entrySet()) {
+        Object metricValue = e2.getValue();
+        Collection<Pair<String, Object>> row = Lists.newArrayList();
+        row.add(new Pair<String, Object>("MetricName", e1.getKey() + "." + e2.getKey()));
+        row.add(new Pair<>("MetricValue", metricValue));
+        ccp.add(row);
+      }
+    }
+    output.put("AllMetrics", ccp);
 
     return output;
   }
