@@ -29,7 +29,7 @@ import com.datatorrent.contrib.formatter.CsvFormatter;
 import com.datatorrent.contrib.parser.CsvParser;
 import com.datatorrent.lib.filter.FilterOperator;
 import com.datatorrent.lib.io.ConsoleOutputOperator;
-import com.datatorrent.metrics.appmetrics.AppMetricComputeService;
+import com.datatorrent.metrics.api.appmetrics.AppMetricProcessor;
 
 @ApplicationAnnotation(name = "Metric-Primitives-App-CCP")
 public class Application2 implements StreamingApplication
@@ -48,7 +48,7 @@ public class Application2 implements StreamingApplication
     dag.addStream("filtered", filterOperator.truePort, formatter.in);
     dag.addStream("string", formatter.out, console.input).setLocality(DAG.Locality.THREAD_LOCAL);
 
-    dag.setAttribute(AppMetricComputeService.APP_METRIC_COMPUTE_SERVICE, new AppMetricsService());
+    dag.setAttribute(AppMetricProcessor.APP_METRIC_PROCESSOR, new AppMetricsService());
     dag.setAttribute(Context.DAGContext.METRICS_TRANSPORT, null);
     dag.setAttribute(topN, Context.OperatorContext.METRICS_AGGREGATOR, new TopNAggregator());
   }
