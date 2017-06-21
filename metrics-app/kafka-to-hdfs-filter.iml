@@ -64,14 +64,10 @@
     <orderEntry type="library" name="Maven: net.sf.supercsv:super-csv:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:janino:2.7.8" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:2.7.8" level="project" />
-    <orderEntry type="module" module-name="metrics-lib-writer" />
-    <orderEntry type="module" module-name="metrics-common" />
     <orderEntry type="module" module-name="metrics-api" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.7.0" level="project" />
-    <orderEntry type="module" module-name="metrics-writer" />
-    <orderEntry type="module" module-name="metrics-plugin" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.hadoop:hadoop-common:2.6.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.hadoop:hadoop-annotations:2.6.0" level="project" />
     <orderEntry type="module-library">

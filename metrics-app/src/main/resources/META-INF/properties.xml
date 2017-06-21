@@ -85,11 +85,6 @@
   </property>
 
   <property>
-    <name>apex.plugin.stram.plugins</name>
-    <value>com.datatorrent.metrics.plugin.MetricWriterPlugin</value>
-  </property>
-
-  <property>
     <name>dt.loggers.level</name>
     <value>com.datatorrent.metrics.*:DEBUG,org.apache.*:INFO</value>
   </property>
