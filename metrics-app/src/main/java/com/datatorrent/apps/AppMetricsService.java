@@ -96,10 +96,4 @@ public class AppMetricsService extends DefaultAppMetricProcessor
 
   }
   private static final long serialVersionUID = 5119330693347067792L;
-
-  @Override
-  public AppMetricAggregator getAppMetricAggregator()
-  {
-    return new AppMetricAggregatorImpl();
-  }
 }
