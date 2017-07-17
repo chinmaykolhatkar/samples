@@ -12,6 +12,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.mutable.MutableLong;
 
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
+
 import com.datatorrent.api.AutoMetric;
 import com.datatorrent.api.DefaultInputPort;
 import com.datatorrent.common.util.BaseOperator;
@@ -22,9 +25,11 @@ import com.datatorrent.common.util.Pair;
  */
 public class TopNAccounts extends BaseOperator
 {
+  @FieldSerializer.Bind(JavaSerializer.class)
   @AutoMetric
   private Collection<Collection<Pair<String, Object>>> topN = new ArrayList<>();
 
+  @FieldSerializer.Bind(JavaSerializer.class)
   @AutoMetric
   private Collection<Collection<Pair<String, Object>>> topNByTwo = new ArrayList<>();
 

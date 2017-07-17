@@ -55,7 +55,9 @@ public class AppMetricsService extends DefaultAppMetricProcessor
         ccp.add(row);
       }
     }
-    output.put("AllMetrics", ccp);
+    if (!ccp.isEmpty()) {
+      output.put("AllMetrics", ccp);
+    }
 
     return output;
   }
