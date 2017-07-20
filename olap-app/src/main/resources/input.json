@@ -1,0 +1,6 @@
+{
+  "timeColumn": "time",
+  "dimensions":["name", "dept"],
+  "measures":[{"type":"longSum", "name":"agg_sum", "fieldName": "value"}, {"type":"count", "name":"agg_count"}],
+  "granularity":"MINUTE"
+}
