@@ -1,0 +1,68 @@
+{
+  "dataSource": "fraud",
+  "granularitySpec": {
+    "type": "uniform",
+    "segmentGranularity": "hour",
+    "queryGranularity": "minute"
+  },
+  "parser": {
+    "type": "string",
+    "parseSpec": {
+      "format": "json",
+      "dimensionsSpec": {
+        "dimensions": [
+          "email",
+          "country",
+          "cctype",
+          "currency",
+          "isfraud"
+        ]
+      },
+      "timestampSpec": {
+        "format": "millis",
+        "column": "timestamp"
+      }
+    }
+  },
+  "metricsSpec": [
+    {
+      "name": "COUNT",
+      "type": "count"
+    },
+    {
+      "name": "TRANSACTIONAMOUNT",
+      "type": "longSum",
+      "fieldName": "amount"
+    },
+    {
+      "name": "email_unique",
+      "type": "hyperUnique",
+      "fieldName": "email"
+    },
+    {
+      "name": "country_unique",
+      "type": "hyperUnique",
+      "fieldName": "country"
+    },
+    {
+      "name": "cctype_unique",
+      "type": "hyperUnique",
+      "fieldName": "cctype"
+    },
+    {
+      "name": "currency_unique",
+      "type": "hyperUnique",
+      "fieldName": "currency"
+    },
+    {
+      "name": "amount_min",
+      "type": "longMin",
+      "fieldName": "amount"
+    },
+    {
+      "name": "amount_max",
+      "type": "longMax",
+      "fieldName": "amount"
+    }
+  ]
+}
